@@ -46,18 +46,32 @@ class AIDisasterDetector {
   private scriptExists: boolean;
   
   constructor() {
-    this.pythonScript = path.join(process.cwd(), 'python', 'process.py');
-    this.cache = new Map(); // Simple memory cache to avoid repeated analysis
-    this.cacheExpiry = 60 * 60 * 1000; // Cache expires after 1 hour (in milliseconds)
+    // Try multiple possible paths for the Python script
+    const possiblePaths = [
+      path.join(process.cwd(), 'server', 'python', 'process.py'),
+      path.join(process.cwd(), 'python', 'process.py'),
+    ];
     
-    // Check if Python script exists
-    this.scriptExists = fs.existsSync(this.pythonScript);
+    // Find the first path that exists
+    this.pythonScript = '';
+    this.scriptExists = false;
+    
+    for (const scriptPath of possiblePaths) {
+      if (fs.existsSync(scriptPath)) {
+        this.pythonScript = scriptPath;
+        this.scriptExists = true;
+        console.log(`✅ AI Disaster Detector initialized with script at ${this.pythonScript}`);
+        break;
+      }
+    }
     
     if (!this.scriptExists) {
-      console.error(`Warning: Python disaster analysis script not found at ${this.pythonScript}`);
-    } else {
-      console.log(`✅ AI Disaster Detector initialized with script at ${this.pythonScript}`);
+      this.pythonScript = possiblePaths[0]; // Default to first path
+      console.error(`Warning: Python disaster analysis script not found at any location. Tried: ${possiblePaths.join(', ')}`);
     }
+    
+    this.cache = new Map(); // Simple memory cache to avoid repeated analysis
+    this.cacheExpiry = 60 * 60 * 1000; // Cache expires after 1 hour (in milliseconds)
   }
   
   /**
