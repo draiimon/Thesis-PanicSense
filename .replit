@@ -30,7 +30,9 @@ args = "npm run dev"
 waitForPort = 5000
 
 [deployment]
-run = ["sh", "-c", "node hello-world.js"]
+run = ["npm", "run", "start:prod"]
+deploymentTarget = "autoscale"
+build = ["npm", "run", "build"]
 
 [[ports]]
 localPort = 5000
