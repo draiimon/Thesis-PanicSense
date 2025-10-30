@@ -41,17 +41,41 @@ export class PythonService {
   constructor() {
     // Enhanced Python binary detection with fallbacks for different environments
     if (process.env.NODE_ENV === 'production') {
-      // Try multiple production python paths
-      const possiblePythonPaths = [
-        '/app/venv/bin/python3',  // Default venv path
-        '/usr/bin/python3',       // System python
-        'python3',                // PATH-based python
-        'python'                  // Generic fallback
-      ];
-      
-      // Use the first Python binary that exists
-      this.pythonBinary = process.env.PYTHON_PATH || possiblePythonPaths[0];
-      console.log(`🐍 Using Python binary in production: ${this.pythonBinary}`);
+      // If PYTHON_PATH is set, use that
+      if (process.env.PYTHON_PATH) {
+        this.pythonBinary = process.env.PYTHON_PATH;
+        console.log(`🐍 Using Python binary from PYTHON_PATH: ${this.pythonBinary}`);
+      } else {
+        // Try multiple production python paths and use the first one that exists
+        const possiblePythonPaths = [
+          'python3',                // PATH-based python (Render uses this)
+          '/usr/local/bin/python3', // Render system python
+          '/usr/bin/python3',       // System python
+          'python',                 // Generic fallback
+          '/app/venv/bin/python3'   // venv path (last resort)
+        ];
+        
+        // Find the first Python binary that exists
+        this.pythonBinary = 'python3'; // Default fallback
+        for (const pythonPath of possiblePythonPaths) {
+          try {
+            // For simple command names, just use them directly
+            if (!pythonPath.startsWith('/')) {
+              this.pythonBinary = pythonPath;
+              console.log(`🐍 Using PATH-based Python binary: ${this.pythonBinary}`);
+              break;
+            }
+            // For absolute paths, check if file exists
+            if (fs.existsSync(pythonPath)) {
+              this.pythonBinary = pythonPath;
+              console.log(`🐍 Found Python binary at: ${this.pythonBinary}`);
+              break;
+            }
+          } catch (error) {
+            // Continue to next path
+          }
+        }
+      }
     } else {
       this.pythonBinary = 'python3';
       console.log(`🐍 Using development Python binary: ${this.pythonBinary}`);

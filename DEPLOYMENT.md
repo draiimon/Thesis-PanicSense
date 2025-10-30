@@ -102,6 +102,8 @@ Build Command: npm install && npm run build
 Start Command: npm run start
 ```
 
+**Note**: The build command now automatically runs database migrations (`npm run db:push`), so no manual migration step is needed.
+
 #### 3. Add Environment Variables
 
 Go to **Environment** tab and add:
@@ -119,9 +121,7 @@ ADMIN_EMAIL=admin@panicsense.ph
 
 1. Click **"Create Web Service"**
 2. Wait for build to complete (5-10 minutes)
-3. Run database migration:
-   - Go to **Shell** tab
-   - Run: `npm run db:push`
+3. Database migrations run automatically during build
 4. Your app will be available at: `https://panicsense.onrender.com`
 
 ### Render-Specific Configuration
