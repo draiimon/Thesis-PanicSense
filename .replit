@@ -1,0 +1,76 @@
+modules = ["nodejs-20", "python-3.11", "python3", "postgresql-16"]
+
+[nix]
+channel = "stable-24_05"
+packages = ["glibcLocales"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "PanicSense-Dev"
+
+[[workflows.workflow]]
+name = "PanicSense-Dev"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+waitForPort = 5000
+
+[deployment]
+run = ["sh", "-c", "node hello-world.js"]
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 35005
+externalPort = 6000
+
+[[ports]]
+localPort = 36687
+externalPort = 5173
+
+[[ports]]
+localPort = 36709
+externalPort = 4200
+
+[[ports]]
+localPort = 40347
+externalPort = 3000
+
+[[ports]]
+localPort = 41153
+externalPort = 3002
+
+[[ports]]
+localPort = 42797
+externalPort = 8000
+
+[[ports]]
+localPort = 43101
+externalPort = 3003
+
+[[ports]]
+localPort = 44365
+externalPort = 5000
+
+[[ports]]
+localPort = 44593
+externalPort = 6800
+
+[agent]
+expertMode = true
